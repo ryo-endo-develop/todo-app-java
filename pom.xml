@@ -26,6 +26,9 @@
         <mybatis-spring-boot.version>3.0.3</mybatis-spring-boot.version>
         <mybatis-dynamic-sql.version>1.5.0</mybatis-dynamic-sql.version>
         
+        <!-- Liquibase -->
+        <liquibase.version>4.25.1</liquibase.version>
+        
         <!-- Database -->
         <postgresql.version>42.7.1</postgresql.version>
         
@@ -79,6 +82,13 @@
                 <groupId>org.mybatis.dynamic-sql</groupId>
                 <artifactId>mybatis-dynamic-sql</artifactId>
                 <version>${mybatis-dynamic-sql.version}</version>
+            </dependency>
+
+            <!-- Liquibase -->
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase.version}</version>
             </dependency>
 
             <!-- Database -->

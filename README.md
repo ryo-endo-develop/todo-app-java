@@ -29,6 +29,25 @@ docker compose down -v
 - Username: todoapp
 - Password: todoapp
 
+### データベースマイグレーション
+```bash
+# マイグレーション実行
+cd todo-infrastructure
+mvn liquibase:update
+
+# マイグレーション状況確認
+mvn liquibase:status
+
+# ロールバック（1つ前に戻す）
+mvn liquibase:rollback -Dliquibase.rollbackCount=1
+
+# 特定タグまでロールバック
+mvn liquibase:rollback -Dliquibase.rollbackTag=v1.0
+
+# SQL生成（実行せず確認のみ）
+mvn liquibase:updateSQL
+```
+
 ### アプリケーション起動（今後実装予定）
 ```bash
 mvn spring-boot:run -pl todo-web
