@@ -18,6 +18,16 @@
     <description>ドメイン層 - ビジネスロジックとドメインモデル</description>
 
     <dependencies>
+        <!-- Code Quality -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+        </dependency>
+        
         <!-- Domain層は他のモジュールに依存しない -->
         <!-- テストのみ -->
         <dependency>

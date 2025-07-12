@@ -29,6 +29,10 @@
         <!-- Liquibase -->
         <liquibase.version>4.25.1</liquibase.version>
         
+        <!-- Code Quality -->
+        <lombok.version>1.18.30</lombok.version>
+        <jsr305.version>3.0.2</jsr305.version>
+        
         <!-- Database -->
         <postgresql.version>42.7.1</postgresql.version>
         
@@ -89,6 +93,20 @@
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-core</artifactId>
                 <version>${liquibase.version}</version>
+            </dependency>
+
+            <!-- Code Quality -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${jsr305.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!-- Database -->
