@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.todoapp</groupId>
-        <artifactId>todo-app-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>com.todoapp</groupId>
+		<artifactId>todo-app-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
 
-    <artifactId>todo-web</artifactId>
-    <packaging>jar</packaging>
+	<artifactId>todo-web</artifactId>
+	<packaging>jar</packaging>
 
-    <name>Todo Web Layer</name>
-    <description>プレゼンテーション層 - REST API とコントローラー</description>
+	<name>Todo Web Layer</name>
+	<description>プレゼンテーション層 - REST API とコントローラー</description>
 
-    <dependencies>
-        <!-- Application層への依存 -->
-        <dependency>
-            <groupId>com.todoapp</groupId>
-            <artifactId>todo-application</artifactId>
-        </dependency>
-        
-        <!-- Infrastructure層への依存 -->
-        <dependency>
-            <groupId>com.todoapp</groupId>
-            <artifactId>todo-infrastructure</artifactId>
-        </dependency>
+	<dependencies>
+		<!-- Application層への依存 -->
+		<dependency>
+			<groupId>com.todoapp</groupId>
+			<artifactId>todo-application</artifactId>
+		</dependency>
 
-        <!-- Test -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+		<!-- Infrastructure層への依存 -->
+		<dependency>
+			<groupId>com.todoapp</groupId>
+			<artifactId>todo-infrastructure</artifactId>
+		</dependency>
+
+		<!-- Test -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>

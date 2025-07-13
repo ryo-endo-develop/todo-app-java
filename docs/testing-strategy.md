@@ -19,40 +19,47 @@
 ### 2. 段階的テスト導入計画
 
 #### Phase 1: 基盤クラステスト（現在）
-**対象**: 変更頻度が低く、安定したクラス
-- `Result<T>`
-- ValueObjectクラス（`TodoId`, `TodoTitle`, `UserName`等）
-- Enumクラス（`TodoStatus`, `UserRole`）
 
-**理由**: 
+**対象**: 変更頻度が低く、安定したクラス
+
+- `Result<T>`
+- ValueObject クラス（`TodoId`, `TodoTitle`, `UserName`等）
+- Enum クラス（`TodoStatus`, `UserRole`）
+
+**理由**:
+
 - 設計変更に強い
 - 他のクラスの基盤となる
 - バグの影響範囲が大きい
 
-#### Phase 2: ドメインロジックテスト（Entity完成後）
+#### Phase 2: ドメインロジックテスト（Entity 完成後）
+
 **対象**: ビジネスロジックを含むクラス
-- Entityクラス（`Todo`, `User`）
+
+- Entity クラス（`Todo`, `User`）
 - ドメインサービス（`TodoStatusTransitionPolicy`等）
 
 #### Phase 3: 統合テスト（全体完成後）
+
 **対象**: コンポーネント間の連携
-- Repository実装
+
+- Repository 実装
 - Application Service
 - Web Controller
 
 ## テスト実装ガイドライン
 
-### 1. AAAパターンの徹底
+### 1. AAA パターンの徹底
 
 ```java
 @Test
 void shouldCreateValidTodoId_WhenValidValueProvided() {
     // Arrange（準備）
     long validId = 123L;
-    
+
     // Act（実行）
     Result<TodoId> result = TodoId.of(validId);
-    
+
     // Assert（検証）
     assertTrue(result.isSuccess());
     assertEquals(validId, result.getValue().getValue());
@@ -77,14 +84,16 @@ void shouldCreateTodoTitle_WhenValidStringProvided() { }
 void shouldRejectTodoTitle_WhenStringTooLong() { }
 ```
 
-### 3. Mock使用の原則
+### 3. Mock 使用の原則
 
-#### ✅ Mockを使う場合
-- **外部依存**: データベース、外部API、ファイルシステム
+#### ✅ Mock を使う場合
+
+- **外部依存**: データベース、外部 API、ファイルシステム
 - **時間依存**: 現在時刻、ランダム値
 - **複雑な協調**: 複数のサービス間の連携
 
-#### ❌ Mockを使わない場合
+#### ❌ Mock を使わない場合
+
 - **ValueObject**: 不変・純粋関数
 - **Enum**: 状態を持たない
 - **純粋なドメインロジック**: 外部依存なし
@@ -95,10 +104,10 @@ void shouldRejectTodoTitle_WhenStringTooLong() { }
 void shouldCalculateLength_WhenTodoTitleCreated() {
     // Arrange
     String title = "Sample Todo";
-    
+
     // Act
     Result<TodoTitle> result = TodoTitle.of(title);
-    
+
     // Assert
     assertTrue(result.isSuccess());
     assertEquals(title.length(), result.getValue().length());
@@ -111,7 +120,7 @@ void shouldSaveTodo_WhenValidTodoProvided() {
     TodoRepository mockRepository = mock(TodoRepository.class);
     Todo todo = createValidTodo();
     when(mockRepository.save(todo)).thenReturn(Result.success(null));
-    
+
     // Act & Assert
     // ...
 }
@@ -123,24 +132,24 @@ void shouldSaveTodo_WhenValidTodoProvided() {
 
 ```java
 public class TestDataBuilder {
-    
+
     public static class TodoIdBuilder {
         private long value = 1L;
-        
+
         public TodoIdBuilder withValue(long value) {
             this.value = value;
             return this;
         }
-        
+
         public Result<TodoId> build() {
             return TodoId.of(value);
         }
-        
+
         public TodoId buildValid() {
             return build().getValue();
         }
     }
-    
+
     public static TodoIdBuilder todoId() {
         return new TodoIdBuilder();
     }
@@ -157,7 +166,8 @@ void test() {
 
 ### 5. アサーションの原則
 
-#### 1テスト1アサーション（推奨）
+#### 1 テスト 1 アサーション（推奨）
+
 ```java
 // ✅ Good: 1つの関心事をテスト
 @Test
@@ -174,12 +184,13 @@ void shouldContainCorrectValue_WhenValidIdProvided() {
 ```
 
 #### 関連するアサーションのグループ化（許可）
+
 ```java
 // ✅ Acceptable: 密接に関連するアサーション
 @Test
 void shouldCreateValidResult_WhenValidParametersProvided() {
     Result<TodoTitle> result = TodoTitle.of("Valid Title");
-    
+
     assertAll(
         () -> assertTrue(result.isSuccess()),
         () -> assertEquals("Valid Title", result.getValue().getValue()),
@@ -191,15 +202,16 @@ void shouldCreateValidResult_WhenValidParametersProvided() {
 ### 6. エラーケースのテスト戦略
 
 #### 境界値テスト
+
 ```java
 @Test
 void shouldRejectTodoTitle_WhenLengthExceedsLimit() {
     // Arrange
     String tooLongTitle = "a".repeat(256); // MAX_LENGTH = 255
-    
+
     // Act
     Result<TodoTitle> result = TodoTitle.of(tooLongTitle);
-    
+
     // Assert
     assertTrue(result.isFailure());
     assertTrue(result.getErrorMessage().orElse("").contains("255文字以内"));
@@ -207,6 +219,7 @@ void shouldRejectTodoTitle_WhenLengthExceedsLimit() {
 ```
 
 #### 異常値テスト
+
 ```java
 @Test
 void shouldRejectTodoId_WhenValueIsNull() {
@@ -217,7 +230,7 @@ void shouldRejectTodoId_WhenValueIsNull() {
 @Test
 void shouldRejectTodoTitle_WhenValueIsNull() {
     Result<TodoTitle> result = TodoTitle.of(null);
-    
+
     assertTrue(result.isFailure());
     assertTrue(result.getErrorMessage().orElse("").contains("必須"));
 }
@@ -280,19 +293,22 @@ void shouldCreateTodoId_WhenSpecificValueProvided() {
 ## テストツール・ライブラリ
 
 ### 必須ライブラリ
+
 - **JUnit 5**: テストフレームワーク
 - **AssertJ**: 流暢なアサーション
 - **Mockito**: モックライブラリ
 
 ### 推奨ライブラリ
+
 - **Testcontainers**: 統合テスト用（将来）
 - **ArchUnit**: アーキテクチャテスト用（将来）
 
 ## 現在の実装対象
 
-### Phase 1で実装するテスト
+### Phase 1 で実装するテスト
+
 1. `Result<T>` クラス
-2. `TodoId` クラス  
+2. `TodoId` クラス
 3. `TodoTitle` クラス
 4. `TodoDescription` クラス
 5. `UserName` クラス
@@ -300,18 +316,20 @@ void shouldCreateTodoId_WhenSpecificValueProvided() {
 7. `UserRole` Enum
 
 ### テスト網羅率の目標
+
 - **Unit Tests**: 90%以上
 - **重要なビジネスロジック**: 100%
 - **エラーハンドリング**: 100%
 
-## CI/CDでのテスト実行
+## CI/CD でのテスト実行
 
 ### 実行方針
+
 ```bash
 # 高速テスト（単体テスト）- 毎回実行
 mvn test
 
-# 統合テスト - PR時実行  
+# 統合テスト - PR時実行
 mvn verify -P integration-test
 
 # E2Eテスト - リリース前実行
@@ -319,8 +337,9 @@ mvn verify -P e2e-test
 ```
 
 ### 品質ゲート
+
 - **テスト成功率**: 100%
 - **カバレッジ**: 90%以上
-- **実行時間**: 単体テスト 30秒以内
+- **実行時間**: 単体テスト 30 秒以内
 
 この方針に基づいて、段階的にテストを実装していきます。

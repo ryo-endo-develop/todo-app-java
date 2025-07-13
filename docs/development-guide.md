@@ -3,6 +3,7 @@
 ## セットアップ手順
 
 ### 1. 前提条件の確認
+
 ```bash
 # Java 17以上
 java --version
@@ -16,6 +17,7 @@ docker compose version
 ```
 
 ### 2. データベース環境の構築
+
 ```bash
 # PostgreSQLコンテナ起動
 docker compose up -d
@@ -28,6 +30,7 @@ docker compose logs postgres
 ```
 
 ### 3. データベースマイグレーション
+
 ```bash
 # Infrastructure層に移動
 cd todo-infrastructure
@@ -40,6 +43,7 @@ mvn liquibase:status
 ```
 
 ### 4. データベース接続確認
+
 ```bash
 # PostgreSQLクライアントで接続
 docker exec -it todo-postgres psql -U todoapp -d todoapp
@@ -60,22 +64,24 @@ SELECT * FROM todos;
 ### マイグレーション追加手順
 
 1. **新しいマイグレーションファイル作成**
+
    ```bash
    # ファイル名形式: VXXX_description.sql
    touch todo-infrastructure/src/main/resources/db/changelog/changes/V005_add_new_feature.sql
    ```
 
 2. **マイグレーション内容記述**
+
    ```sql
    -- liquibase formatted sql
-   
+
    -- changeset todo-app:005-add-new-feature
    -- comment: 新機能のテーブル追加
    CREATE TABLE new_feature (
        id BIGSERIAL PRIMARY KEY,
        name VARCHAR(100) NOT NULL
    );
-   
+
    -- rollback DROP TABLE new_feature;
    ```
 
@@ -103,6 +109,7 @@ mvn liquibase:rollbackSQL -Dliquibase.rollbackCount=1
 ### よくある問題と解決方法
 
 #### 1. データベース接続エラー
+
 ```bash
 # コンテナ状態確認
 docker compose ps
@@ -115,6 +122,7 @@ docker compose restart postgres
 ```
 
 #### 2. マイグレーション失敗
+
 ```bash
 # 状況確認
 mvn liquibase:status
@@ -127,6 +135,7 @@ mvn liquibase:clearCheckSums
 ```
 
 #### 3. 開発データリセット
+
 ```bash
 # 全データ削除（注意！）
 docker compose down -v
@@ -154,10 +163,10 @@ mvn clean install
 
 ## データベース設計変更時の手順
 
-1. **設計書更新**: `docs/database-design.md`のER図を更新
-2. **マイグレーション作成**: 新しいVXXX_*.sqlファイル作成
+1. **設計書更新**: `docs/database-design.md`の ER 図を更新
+2. **マイグレーション作成**: 新しい VXXX\_\*.sql ファイル作成
 3. **テスト**: 開発環境でマイグレーション実行
-4. **レビュー**: PR作成時にマイグレーションもレビュー対象
+4. **レビュー**: PR 作成時にマイグレーションもレビュー対象
 5. **本番適用**: 本番環境でのマイグレーション実行
 
 ## 便利なコマンド集
