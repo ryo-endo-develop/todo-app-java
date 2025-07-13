@@ -1,7 +1,6 @@
 package com.todoapp.domain.common;
 
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -10,6 +9,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -29,7 +29,6 @@ import java.util.function.Supplier;
 @Immutable
 @ThreadSafe
 @Getter
-@EqualsAndHashCode
 @ToString
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Result<T> {
@@ -218,5 +217,41 @@ public final class Result<T> {
             throw new IllegalArgumentException("Default supplier must not be null");
         }
         return isSuccess() ? value : defaultSupplier.get();
+    }
+    
+    /**
+     * 等価性の判定
+     * Result の状態（成功/失敗）と内容を正しく比較する
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        
+        Result<?> other = (Result<?>) obj;
+        
+        // まず状態（成功/失敗）を比較
+        if (this.success != other.success) return false;
+        
+        if (this.success) {
+            // 成功結果の場合：値を比較
+            return Objects.equals(this.value, other.value);
+        } else {
+            // 失敗結果の場合：エラーメッセージを比較
+            return Objects.equals(this.errorMessage, other.errorMessage);
+        }
+    }
+    
+    /**
+     * ハッシュコードの計算
+     * equals契約に従って実装
+     */
+    @Override
+    public int hashCode() {
+        if (success) {
+            return Objects.hash(success, value);
+        } else {
+            return Objects.hash(success, errorMessage);
+        }
     }
 }

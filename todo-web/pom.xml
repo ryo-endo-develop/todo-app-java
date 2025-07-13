@@ -11,25 +11,26 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>todo-domain</artifactId>
+    <artifactId>todo-web</artifactId>
     <packaging>jar</packaging>
 
-    <name>Todo Domain Layer</name>
-    <description>ドメイン層 - ビジネスロジックとドメインモデル</description>
+    <name>Todo Web Layer</name>
+    <description>プレゼンテーション層 - REST API とコントローラー</description>
 
     <dependencies>
-        <!-- Code Quality -->
+        <!-- Application層への依存 -->
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
+            <groupId>com.todoapp</groupId>
+            <artifactId>todo-application</artifactId>
         </dependency>
         
-        <!-- Domain層は他のモジュールに依存しない -->
-        <!-- テストのみ -->
+        <!-- Infrastructure層への依存 -->
+        <dependency>
+            <groupId>com.todoapp</groupId>
+            <artifactId>todo-infrastructure</artifactId>
+        </dependency>
+
+        <!-- Test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -38,16 +39,6 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

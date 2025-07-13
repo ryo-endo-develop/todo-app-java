@@ -6,99 +6,80 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
- * Todoのステータスを表現する列挙型
- * Effective Java: Item 34 (intの代わりにenumを使う)
- * 不変性とタイプセーフ性を保証
+ * Todoのステータスを定義するEnum
+ * 
+ * 責務:
+ * - ステータス値の定義と型安全性の保証
+ * - 不正な値の防止
+ * - 基本的な属性情報の保持
+ * 
+ * 非責務:
+ * - 状態遷移ロジック（→ TodoStatusTransitionPolicy）
+ * - 複雑なビジネスルール（→ ドメインサービス）
  */
 @Getter
 public enum TodoStatus {
     
-    TODO("未完了", "新しく作成されたTodo"),
-    IN_PROGRESS("進行中", "作業中のTodo"),
-    COMPLETED("完了", "完了したTodo"),
-    DELETED("削除", "論理削除されたTodo");
+    TODO("TODO", "未完了", "新しく作成されたTodo"),
+    IN_PROGRESS("IN_PROGRESS", "進行中", "作業中のTodo"),
+    COMPLETED("COMPLETED", "完了", "完了したTodo"),
+    DELETED("DELETED", "削除", "論理削除されたTodo");
     
+    private final String code;
     private final String displayName;
     private final String description;
     
-    // Enumコンストラクタ: fail-fastが重要なのでObjects.requireNonNullを使用
-    TodoStatus(@Nonnull String displayName, @Nonnull String description) {
+    // Enumコンストラクタ：基本的な属性設定のみ
+    TodoStatus(@Nonnull String code, @Nonnull String displayName, @Nonnull String description) {
+        this.code = Objects.requireNonNull(code, "Status code must not be null");
         this.displayName = Objects.requireNonNull(displayName, "Display name must not be null");
         this.description = Objects.requireNonNull(description, "Description must not be null");
     }
     
     /**
-     * アクティブなステータスかどうかを判定
-     * 削除されたTodoは非アクティブ
-     */
-    public boolean isActive() {
-        return this != DELETED;
-    }
-    
-    /**
-     * 完了状態かどうかを判定
-     */
-    public boolean isCompleted() {
-        return this == COMPLETED;
-    }
-    
-    /**
-     * 進行可能な状態かどうかを判定
-     * 削除されたTodoは進行不可能
-     */
-    public boolean canProgress() {
-        return this == TODO || this == IN_PROGRESS;
-    }
-    
-    /**
-     * 指定したステータスへの遷移が可能かどうかを判定
-     * ビジネスルールに基づく状態遷移の制御
-     */
-    public boolean canTransitionTo(@Nonnull TodoStatus newStatus) {
-        // publicメソッドなので引数バリデーション
-        if (newStatus == null) {
-            throw new IllegalArgumentException("New status must not be null");
-        }
-        
-        // 削除されたTodoは他の状態に遷移できない
-        if (this == DELETED) {
-            return false;
-        }
-        
-        // 削除への遷移は常に可能（論理削除）
-        if (newStatus == DELETED) {
-            return true;
-        }
-        
-        // 同じ状態への遷移は無意味だが許可
-        if (this == newStatus) {
-            return true;
-        }
-        
-        // ビジネスルールに基づく遷移規則
-        return switch (this) {
-            case TODO -> newStatus == IN_PROGRESS || newStatus == COMPLETED;
-            case IN_PROGRESS -> newStatus == TODO || newStatus == COMPLETED;
-            case COMPLETED -> newStatus == TODO || newStatus == IN_PROGRESS;
-            case DELETED -> false; // 上で既にチェック済み
-        };
-    }
-    
-    /**
-     * 文字列からTodoStatusを取得
-     * 大文字小文字を区別しない
+     * コードから対応するEnumを取得
+     * 
+     * @param code ステータスコード
+     * @return 対応するTodoStatus
+     * @throws IllegalArgumentException 不正なコードの場合
      */
     @Nonnull
-    public static TodoStatus fromString(@Nonnull String status) {
-        if (status == null) {
-            throw new IllegalArgumentException("Status string must not be null");
+    public static TodoStatus fromCode(@Nonnull String code) {
+        Objects.requireNonNull(code, "Code must not be null");
+        
+        String normalizedCode = code.trim().toUpperCase();
+        for (TodoStatus status : values()) {
+            if (status.code.equals(normalizedCode)) {
+                return status;
+            }
         }
         
+        throw new IllegalArgumentException("Unknown status code: " + code);
+    }
+    
+    /**
+     * 名前から対応するEnumを取得（大文字小文字を区別しない）
+     * 
+     * @param name ステータス名
+     * @return 対応するTodoStatus
+     * @throws IllegalArgumentException 不正な名前の場合
+     */
+    @Nonnull
+    public static TodoStatus fromName(@Nonnull String name) {
+        Objects.requireNonNull(name, "Name must not be null");
+        
         try {
-            return TodoStatus.valueOf(status.toUpperCase().trim());
+            return TodoStatus.valueOf(name.toUpperCase().trim());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid TodoStatus: " + status +
-                ". Valid values are: TODO, IN_PROGRESS, COMPLETED, DELETED", e);
+            throw new IllegalArgumentException("Unknown status name: " + name, e);
         }
+    }
+    
+    /**
+     * 指定されたコードと一致するかどうかを判定
+     */
+    public boolean hasCode(@Nonnull String code) {
+        Objects.requireNonNull(code, "Code must not be null");
+        return this.code.equals(code.trim().toUpperCase());
     }
 }

@@ -6,88 +6,86 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
- * ユーザーの役割を表現する列挙型
- * Effective Java: Item 34 (intの代わりにenumを使う)
+ * ユーザーの役割を定義するEnum
+ * 
+ * 責務:
+ * - 役割値の定義と型安全性の保証
+ * - 基本的な属性情報の保持
+ * 
+ * 非責務:
+ * - 権限管理ロジック（→ UserPermissionPolicy）
+ * - 複雑な認可処理（→ ドメインサービス）
  */
 @Getter
 public enum UserRole {
     
-    USER("一般ユーザー", "通常の機能を使用できるユーザー"),
-    ADMIN("管理者", "システム管理機能にアクセスできるユーザー");
+    USER("USER", "一般ユーザー", "通常の機能を使用できるユーザー", 1),
+    MODERATOR("MODERATOR", "モデレーター", "一部の管理機能を使用できるユーザー", 5),
+    ADMIN("ADMIN", "管理者", "システム管理機能にアクセスできるユーザー", 10),
+    SUPER_ADMIN("SUPER_ADMIN", "スーパー管理者", "全ての機能にアクセスできるユーザー", 99);
     
+    private final String code;
     private final String displayName;
     private final String description;
+    private final int level;  // 権限レベル（参考値）
     
-    // Enumコンストラクタ: fail-fastが重要
-    UserRole(@Nonnull String displayName, @Nonnull String description) {
+    // Enumコンストラクタ：基本的な属性設定のみ
+    UserRole(@Nonnull String code, @Nonnull String displayName, 
+             @Nonnull String description, int level) {
+        this.code = Objects.requireNonNull(code, "Role code must not be null");
         this.displayName = Objects.requireNonNull(displayName, "Display name must not be null");
         this.description = Objects.requireNonNull(description, "Description must not be null");
+        this.level = level;
     }
     
     /**
-     * 管理者権限があるかどうかを判定
-     */
-    public boolean hasAdminPrivileges() {
-        return this == ADMIN;
-    }
-    
-    /**
-     * 指定した操作を実行する権限があるかどうかを判定
-     * Strategy パターンの応用
-     */
-    public boolean canPerform(@Nonnull AdminOperation operation) {
-        if (operation == null) {
-            throw new IllegalArgumentException("Operation must not be null");
-        }
-        return operation.isAllowedFor(this);
-    }
-    
-    /**
-     * 文字列からUserRoleを取得
+     * コードから対応するEnumを取得
+     * 
+     * @param code 役割コード
+     * @return 対応するUserRole
+     * @throws IllegalArgumentException 不正なコードの場合
      */
     @Nonnull
-    public static UserRole fromString(@Nonnull String role) {
-        if (role == null) {
-            throw new IllegalArgumentException("Role string must not be null");
+    public static UserRole fromCode(@Nonnull String code) {
+        Objects.requireNonNull(code, "Code must not be null");
+        
+        String normalizedCode = code.trim().toUpperCase();
+        for (UserRole role : values()) {
+            if (role.code.equals(normalizedCode)) {
+                return role;
+            }
         }
         
+        throw new IllegalArgumentException("Unknown role code: " + code);
+    }
+    
+    /**
+     * 名前から対応するEnumを取得
+     */
+    @Nonnull
+    public static UserRole fromName(@Nonnull String name) {
+        Objects.requireNonNull(name, "Name must not be null");
+        
         try {
-            return UserRole.valueOf(role.toUpperCase().trim());
+            return UserRole.valueOf(name.toUpperCase().trim());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid UserRole: " + role +
-                ". Valid values are: USER, ADMIN", e);
+            throw new IllegalArgumentException("Unknown role name: " + name, e);
         }
     }
     
     /**
-     * 管理者操作を定義するStrategy パターンのインターフェース
+     * 指定されたコードと一致するかどうかを判定
      */
-    public enum AdminOperation {
-        USER_MANAGEMENT {
-            @Override
-            public boolean isAllowedFor(@Nonnull UserRole role) {
-                return role.hasAdminPrivileges();
-            }
-        },
-        SYSTEM_CONFIGURATION {
-            @Override
-            public boolean isAllowedFor(@Nonnull UserRole role) {
-                return role.hasAdminPrivileges();
-            }
-        },
-        VIEW_ALL_TODOS {
-            @Override
-            public boolean isAllowedFor(@Nonnull UserRole role) {
-                return role.hasAdminPrivileges();
-            }
-        },
-        MANAGE_OWN_TODOS {
-            @Override
-            public boolean isAllowedFor(@Nonnull UserRole role) {
-                return true; // 全ユーザーが自分のTodoを管理可能
-            }
-        };
-        
-        public abstract boolean isAllowedFor(@Nonnull UserRole role);
+    public boolean hasCode(@Nonnull String code) {
+        Objects.requireNonNull(code, "Code must not be null");
+        return this.code.equals(code.trim().toUpperCase());
+    }
+    
+    /**
+     * 指定されたレベル以上かどうかを判定
+     * 基本的な比較のみ、複雑な権限ロジックは外部サービスで処理
+     */
+    public boolean hasLevelOrHigher(int requiredLevel) {
+        return this.level >= requiredLevel;
     }
 }
