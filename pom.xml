@@ -137,6 +137,87 @@
 	</dependencyManagement>
 
 	<build>
+		<plugins>
+			<!-- Global plugins that apply to all modules -->
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>${spotless.version}</version>
+				<configuration>
+					<!-- Java フォーマット -->
+					<java>
+						<includes>
+							<include>src/main/java/**/*.java</include>
+							<include>src/test/java/**/*.java</include>
+						</includes>
+
+						<!-- Google Java Format -->
+						<googleJavaFormat>
+							<version>1.19.2</version>
+							<style>GOOGLE</style>
+						</googleJavaFormat>
+
+						<!-- Import order -->
+						<importOrder>
+							<order>java|javax,org,com,</order>
+						</importOrder>
+
+						<!-- Remove unused imports -->
+						<removeUnusedImports />
+
+						<!-- Format annotations -->
+						<formatAnnotations />
+
+						<!-- License header -->
+						<licenseHeader>
+							<content>/* (C) $YEAR Todo App Project */</content>
+						</licenseHeader>
+					</java>
+
+					<!-- XML フォーマット -->
+					<formats>
+						<format>
+							<includes>
+								<include>pom.xml</include>
+								<include>**/*.xml</include>
+							</includes>
+							<excludes>
+								<exclude>target/**</exclude>
+							</excludes>
+							<eclipseWtp>
+								<type>XML</type>
+							</eclipseWtp>
+						</format>
+
+						<!-- Markdown フォーマット -->
+						<format>
+							<includes>
+								<include>**/*.md</include>
+							</includes>
+							<excludes>
+								<exclude>target/**</exclude>
+							</excludes>
+							<prettier>
+								<devDependencyProperties>
+									<prettier>2.8.8</prettier>
+								</devDependencyProperties>
+								<config>
+									<tabWidth>2</tabWidth>
+									<printWidth>120</printWidth>
+								</config>
+							</prettier>
+						</format>
+					</formats>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -174,84 +255,11 @@
 						</execution>
 					</executions>
 				</plugin>
-				<!-- Spotless - コードフォーマッター -->
+				<!-- Spotless - コードフォーマッター (pluginManagement) -->
 				<plugin>
 					<groupId>com.diffplug.spotless</groupId>
 					<artifactId>spotless-maven-plugin</artifactId>
 					<version>${spotless.version}</version>
-					<configuration>
-						<!-- Java フォーマット -->
-						<java>
-							<includes>
-								<include>src/main/java/**/*.java</include>
-								<include>src/test/java/**/*.java</include>
-							</includes>
-
-							<!-- Google Java Format -->
-							<googleJavaFormat>
-								<version>1.19.2</version>
-								<style>GOOGLE</style>
-							</googleJavaFormat>
-
-							<!-- Import order -->
-							<importOrder>
-								<order>java|javax,org,com,</order>
-							</importOrder>
-
-							<!-- Remove unused imports -->
-							<removeUnusedImports />
-
-							<!-- Format annotations -->
-							<formatAnnotations />
-
-							<!-- License header -->
-							<licenseHeader>
-								<content>/* (C) $YEAR Todo App Project */</content>
-							</licenseHeader>
-						</java>
-
-						<!-- XML フォーマット -->
-						<formats>
-							<format>
-								<includes>
-									<include>pom.xml</include>
-									<include>**/*.xml</include>
-								</includes>
-								<excludes>
-									<exclude>target/**</exclude>
-								</excludes>
-								<eclipseWtp>
-									<type>XML</type>
-								</eclipseWtp>
-							</format>
-
-							<!-- Markdown フォーマット -->
-							<format>
-								<includes>
-									<include>**/*.md</include>
-								</includes>
-								<excludes>
-									<exclude>target/**</exclude>
-								</excludes>
-								<prettier>
-									<devDependencyProperties>
-										<prettier>2.8.8</prettier>
-									</devDependencyProperties>
-									<config>
-										<tabWidth>2</tabWidth>
-										<printWidth>120</printWidth>
-									</config>
-								</prettier>
-							</format>
-						</formats>
-					</configuration>
-					<executions>
-						<execution>
-							<goals>
-								<goal>check</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>
